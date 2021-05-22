@@ -1,6 +1,5 @@
-**/[Tt]mp/*
-
 *~
 **/*.sw[mnop]
-
 !**/*.gitkeep
+**/[Tt]mp/*
+dist/*
