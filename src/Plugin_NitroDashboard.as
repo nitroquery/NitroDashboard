@@ -1,7 +1,7 @@
 #name               "Nitro Dashboard"
 #author             "NitroQuery"
 #category           "Overlay"
-#version            "0.2.0"
+#version            "0.2.1"
 #min_game_version   "2021-05-20"
 #siteid             102
 
