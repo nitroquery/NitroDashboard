@@ -1,8 +1,9 @@
 #name               "Nitro Dashboard"
 #author             "NitroQuery"
-#category           "Utilities"
+#category           "Overlay"
 #version            "0.2.0"
 #min_game_version   "2021-05-20"
+#siteid             102
 
 // Positioning settings
 [Setting name="Position X" min=-0.1 max=1.1]
