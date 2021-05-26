@@ -48,7 +48,7 @@ namespace Nitro {
       float size = (width * 0.15) * setting_scale;
       // Set Position
       float posX = (width - size) * setting_posX + (size/2);
-      float posY = (height - (size / 2)) * 1.03;
+      float posY = (height - size) * setting_posY + (size/2);
       vec2 pose = vec2(posX, posY);
 
       float startAngle = 140.0f;
@@ -118,7 +118,7 @@ namespace Nitro {
       // rpm label
       float fontSizeLabel = (width * 0.0075) * setting_scale;
       fvec2 = Draw::MeasureString("RPM x 1000", font, fontSizeLabel/2);
-      fvec2.y = (height * 0.09f) * setting_scale;
+      fvec2.y = (height * 0.08f) * setting_scale;
       Draw::DrawString(vec2(pose.x - fvec2.x, pose.y - fvec2.y + (height * 0.005f)), theme.font, "RPM x 1000", font, fontSizeLabel);
 
       // Draw needle
@@ -134,10 +134,10 @@ namespace Nitro {
       nvg::Stroke();
       nvg::ClosePath();
 
-      // gear background
+      // center background
       nvg::BeginPath();
       nvg::Rect(pose.x-(size/4), pose.y-(size/4), (size/2), (size/2));
-      nvg::FillPaint(nvg::RadialGradient(vec2(pose.x, pose.y), size*0.21, size*0.22, vec4(0, 0, 0, 0.8), vec4(0, 0, 0, 0)));
+      nvg::FillPaint(nvg::RadialGradient(vec2(pose.x, pose.y), size*0.21, size*0.22, vec4(0, 0, 0, 0.5), vec4(0, 0, 0, 0)));
       nvg::Fill();
       nvg::ClosePath();
 
@@ -151,9 +151,9 @@ namespace Nitro {
         gear = vehicle.State.CurGear + "";
       }
 
-      float fontSizeGear = (width * 0.04) * setting_scale;
+      float fontSizeGear = (width * 0.025) * setting_scale;
       fvec2 = Draw::MeasureString(gear, font, fontSizeGear/2);
-      fvec2.y = (height * 0.075f) * setting_scale;
+      fvec2.y = (height * 0.045f) * setting_scale;
       Draw::DrawString(vec2(pose.x - fvec2.x, pose.y - (fvec2.y/2)), vec4(gearIndicatorColor.x, gearIndicatorColor.y, gearIndicatorColor.z, 1.0f), gear, font, fontSizeGear);
 
 
@@ -169,45 +169,63 @@ namespace Nitro {
       Draw::DrawString(vec2(pose.x - fvec2.x, pose.y - fvec2.y + (height * 0.005f)), theme.font, "km/h", font, fontSizeLabel);
 
       // Break indicator
-      float dotSize = fontSizeSpeed/2;
       if (vehicle.State.InputIsBraking) {
+        float fontSizeBreak = (width * 0.01) * setting_scale;
+        fvec2 = Draw::MeasureString("BREAK", font, fontSizeBreak/2);
+        fvec2.y = (height * -0.025f) * setting_scale;
+
         nvg::BeginPath();
-        float breakDotX = pose.x - (fvec2.x * 0.5);
-        float breakDotY = pose.y - (fvec2.y * 0.6);
-        nvg::Rect(breakDotX, breakDotY, dotSize, dotSize);
-        nvg::FillPaint(nvg::RadialGradient(vec2(breakDotX+(dotSize/2), breakDotY+(dotSize/2)), dotSize/4, dotSize/2, vec4(1, 0, 0, 1), vec4(0, 0, 0, 0)));
+        nvg::Rect(pose.x - (fvec2.x * 1.2), pose.y - fvec2.y + (height * -0.0025f), size*0.2, size*0.1);
+        nvg::FillColor(vec4(1, 0, 0, 0.5));
         nvg::Fill();
         nvg::ClosePath();
+
+        Draw::DrawString(vec2(pose.x - fvec2.x, pose.y - fvec2.y + (height * 0.005f)), vec4(1.0f, 1.0f, 1.0f, 1.0f), "BREAK", font, fontSizeBreak);
+
       }
 
+      // Gas pedal
+      int ssize = 25 * setting_scale;
+      float gasX = pose.x - (ssize * 0.5);
+      float gasY = (pose.y - (ssize * 0.8));
+      this.RenderArrow(ssize, vec2(gasX, gasY), vec4(1.0f, 1.0f, 1.0f, 0.5f), 300.0f, 1.0);
       if (vehicle.State.InputGasPedal > 0) {
-        nvg::BeginPath();
-        float gasDotX = pose.x - (fvec2.x * 0.5);
-        float gasDotY = pose.y - (fvec2.y * -0.9);
-        nvg::Rect(gasDotX, gasDotY, dotSize, dotSize);
-        nvg::FillPaint(nvg::RadialGradient(vec2(gasDotX+(dotSize/2), gasDotY+(dotSize/2)), dotSize/4, dotSize/2, vec4(0, 1, 0, 1), vec4(0, 0, 0, 0)));
-        nvg::Fill();
-        nvg::ClosePath();
+        this.RenderArrow(ssize, vec2(gasX, gasY), this.theme.rpmFillGearUp, 300.0f, vehicle.State.InputGasPedal);
       }
 
-      if (vehicle.State.InputSteer < 0) {
-        nvg::BeginPath();
-        float gasDotX = pose.x - (fvec2.x * 4);
-        float gasDotY = pose.y - (fvec2.y * -0.0001);
-        nvg::Rect(gasDotX, gasDotY, dotSize, dotSize);
-        nvg::FillPaint(nvg::RadialGradient(vec2(gasDotX+(dotSize/2), gasDotY+(dotSize/2)), dotSize/4, dotSize/2, this.theme.rpmFillGearDown, vec4(0, 0, 0, 0)));
-        nvg::Fill();
-        nvg::ClosePath();
-      }
+      // Steer right
+      float stearRX = pose.x + (size * 0.08);
+      float stearRY = (pose.y + (ssize / 2) - ssize);
+      this.RenderArrow(ssize, vec2(stearRX, stearRY), vec4(1.0f, 1.0f, 1.0f, 0.5f), 30.0, 1.0);
       if (vehicle.State.InputSteer > 0) {
-        nvg::BeginPath();
-        float gasDotX = pose.x - (fvec2.x * -2.5);
-        float gasDotY = pose.y - (fvec2.y * -0.0001);
-        nvg::Rect(gasDotX, gasDotY, dotSize, dotSize);
-        nvg::FillPaint(nvg::RadialGradient(vec2(gasDotX+(dotSize/2), gasDotY+(dotSize/2)), dotSize/4, dotSize/2, this.theme.rpmFillGearDown, vec4(0, 0, 0, 0)));
-        nvg::Fill();
-        nvg::ClosePath();
+        this.RenderArrow(ssize, vec2(stearRX, stearRY), this.theme.rpmFillGearDown , 30.0, vehicle.State.InputSteer);
       }
+      // Steer left
+      float stearLX = pose.x + (size * -0.08);
+      float stearLY = pose.y + (ssize / 2);
+      this.RenderArrow(ssize, vec2(stearLX, stearLY), vec4(1.0f, 1.0f, 1.0f, 0.5f), 210.0, 1.0);
+      if (vehicle.State.InputSteer < 0) {
+        this.RenderArrow(ssize, vec2(stearLX, stearLY), this.theme.rpmFillGearDown , 210.0, Math::Abs(vehicle.State.InputSteer));
+      }
+    }
+
+    void RenderArrow(int _size, vec2 coords, vec4 color, float angle, float percent)
+    {
+      nvg::BeginPath();
+      nvg::MoveTo(coords);
+      vec2 next_coords = rotate(vec2(_size, 0), angle)*percent + coords;
+      vec2 next_coords_2 = rotate(vec2(_size, 0), angle+60.0) + coords;
+      nvg::LineTo(next_coords);
+      if(percent != 1.0) {
+        vec2 normal_next_coords = rotate(vec2(_size, 0), angle) + coords;
+        vec2 next_quad_coord = (normal_next_coords - next_coords_2)*percent + next_coords_2;
+        nvg::LineTo(next_quad_coord);
+      }
+      nvg::LineTo(next_coords_2);
+      nvg::LineTo(coords);
+      nvg::FillColor(color);
+      nvg::Fill();
+      nvg::ClosePath();
     }
   }
 }

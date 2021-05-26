@@ -5,42 +5,42 @@
 #min_game_version   "2021-05-20"
 
 // Positioning settings
-[Setting name="Position X" min=0 max=1]
-float setting_posX = 0.65;
-[Setting name="Position Y" min=0 max=1]
-float setting_posY = 1.0;
+[Setting name="Position X" min=-0.1 max=1.1]
+float setting_posX = 0.175;
+[Setting name="Position Y" min=-0.1 max=1.1]
+float setting_posY = 1.020;
 
 // Scale setting
 [Setting name="Scale" min=0.5 max=2.0]
-float setting_scale = 1.0;
+float setting_scale = 0.950f;
 
 // Background color setting
 [Setting name="Background color R"]
-float setting_bgColorR = 0.730f;
+float setting_bgColorR = 1.000f;
 [Setting name="Background color G"]
-float setting_bgColorG = 0.850f;
+float setting_bgColorG = 1.000f;
 [Setting name="Background color B"]
-float setting_bgColorB = 0.950f;
+float setting_bgColorB = 1.000f;
 [Setting name="Background color A"]
-float setting_bgColorA = 0.900f;
+float setting_bgColorA = 0.450f;
 
 [Setting name="RPM fill color R"]
-float setting_rpmFillColorR = 0.600;
+float setting_rpmFillColorR = 1.000;
 [Setting name="RPM fill color G"]
-float setting_rpmFillColorG = 0.900;
+float setting_rpmFillColorG = 1.000;
 [Setting name="RPM fill color B"]
 float setting_rpmFillColorB = 1.000;
 [Setting name="RPM fill color A"]
 float setting_rpmFillColorA = 0.300;
 
 [Setting name="RPM fill gear down color R"]
-float setting_rpmFillGearDownColorR = 0.700;
+float setting_rpmFillGearDownColorR = 1.000;
 [Setting name="RPM fill gear Down color G"]
-float setting_rpmFillGearDownColorG = 0.700;
+float setting_rpmFillGearDownColorG = 0.556;
 [Setting name="RPM fill gear Down color B"]
-float setting_rpmFillGearDownColorB = 0.020;
+float setting_rpmFillGearDownColorB = 0.000;
 [Setting name="RPM fill gear Down color A"]
-float setting_rpmFillGearDownColorA = 0.300;
+float setting_rpmFillGearDownColorA = 0.800;
 
 [Setting name="RPM Fill gear up color R"]
 float setting_rpmFillGearUpColorR = 0.250;
@@ -49,7 +49,7 @@ float setting_rpmFillGearUpColorG = 0.700;
 [Setting name="RPM Fill gear Up color B"]
 float setting_rpmFillGearUpColorB = 0.020;
 [Setting name="RPM Fill gear up color A"]
-float setting_rpmFillGearUpColorA = 0.300;
+float setting_rpmFillGearUpColorA = 0.800;
 
 [Setting name="RPM Fill high rev color R"]
 float setting_rpmFillHighColorR = 0.800;
@@ -58,41 +58,41 @@ float setting_rpmFillHighColorG = 0.000;
 [Setting name="RPM Fill high rev color B"]
 float setting_rpmFillHighColorB = 0.000;
 [Setting name="RPM Fill high rev color A"]
-float setting_rpmFillHighColorA = 0.300;
+float setting_rpmFillHighColorA = 0.800;
 
 [Setting name="Font color R"]
-float setting_fontColorR = 0.100;
+float setting_fontColorR = 0.000;
 [Setting name="Font color G"]
-float setting_fontColorG = 0.300;
+float setting_fontColorG = 0.000;
 [Setting name="Font color B"]
-float setting_fontColorB = 0.400;
+float setting_fontColorB = 0.000;
 [Setting name="Font color A"]
 float setting_fontColorA = 1.000;
 
 [Setting name="Rpm digits font color R"]
-float setting_fontRpmDigitColorR = 0.100;
+float setting_fontRpmDigitColorR = 0.077;
 [Setting name="Rpm digits font color G"]
-float setting_fontRpmDigitColorG = 0.400;
+float setting_fontRpmDigitColorG = 0.052;
 [Setting name="Rpm digits font color B"]
-float setting_fontRpmDigitColorB = 0.700;
+float setting_fontRpmDigitColorB = 0.052;
 [Setting name="Rpm digits font color A"]
 float setting_fontRpmDigitColorA = 1.000;
 
 [Setting name="RPM step color R"]
-float setting_rpmStepColorR = 0.090;
+float setting_rpmStepColorR = 0.000;
 [Setting name="RPM step color G"]
 float setting_rpmStepColorG = 0.000;
 [Setting name="RPM step color B"]
-float setting_rpmStepColorB = 0.400;
+float setting_rpmStepColorB = 0.000;
 [Setting name="RPM step color A"]
-float setting_rpmStepColorA = 1.000;
+float setting_rpmStepColorA = 0.500;
 
 [Setting name="Edge color R"]
-float setting_rpmEdgeColorR = 0.090;
+float setting_rpmEdgeColorR = 0.015;
 [Setting name="Edge color G"]
-float setting_rpmEdgeColorG = 0.000;
+float setting_rpmEdgeColorG = 0.018;
 [Setting name="Edge color B"]
-float setting_rpmEdgeColorB = 0.400;
+float setting_rpmEdgeColorB = 0.019;
 [Setting name="Edge color A"]
 float setting_rpmEdgeColorA = 1.000;
 
@@ -130,10 +130,10 @@ void RenderMenu() {
 
     if (UI::BeginMenu("Position & Scale")) {
       // Horizontal position
-      setting_posX = UI::SliderFloat("Position X", setting_posX, 0, 1.0f);
+      setting_posX = UI::SliderFloat("Position X", setting_posX, -0.1f, 1.0f);
 
       // Vertical position
-      setting_posY = UI::SliderFloat("Position Y", setting_posY, 0, 1.0f);
+      setting_posY = UI::SliderFloat("Position Y", setting_posY, -0.1f, 1.1f);
 
       //  Scale
       setting_scale = UI::SliderFloat("Scale", setting_scale, 0.5, 1.5f);
@@ -207,7 +207,7 @@ void RenderMenu() {
         setting_rpmNeedleColorB = color.z;
         setting_rpmNeedleColorA = UI::SliderFloat("Needle Color Alpha", setting_rpmNeedleColorA, 0.0f, 1.0f);
         UI::Separator();
-        
+
         UI::EndMenu();
       }
 
