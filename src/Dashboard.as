@@ -1,231 +1,213 @@
-#include "Icons.as"
+#include "Core.as";
+#include "Vehicle.as";
+#include "Theme.as";
 
 namespace Nitro {
-	#include "Theme.as"
-	#include "Helpers.as"
-	#include "Data.as"
+  Resources::Font@ font;
 
-	Resources::Font@ font;
-
-	class Dashboard {
-		// Are we in game should ui be shown
-		bool inGame;
-
-		Data data;
-
-		Dashboard() {
-			this.data = Data();
+  class Dashboard {
+    Nitro::Core core;
+    Theme theme;
+    float Gear = 0;
+    // Init Nitro Dashboard Plugin
+    Dashboard() {
+      this.core = Nitro::Core();
 		}
 
-		// Init Nitro Dashboard Plugin
+    // Init Nitro Dashboard Plugin
 		void Init() {
-			@font = Resources::GetFont("hemi_head_bd_it.ttf", 32.0f);
-		}
+      @font = Resources::GetFont("hemi_head_bd_it.ttf");
+    }
 
-		void Update(float dt) {
-			// Do nothihing user disabled the dash
-			if (!setting_enabled) {
-				return;
-			}
-			if (cast<CSmArenaClient>(GetApp().CurrentPlayground) is null) {
-				this.inGame = false;
-	      return;
-			}
+    void Update(float dt) {
+      this.core.Tick(dt);
+      this.theme = Theme();
+    }
 
-			CSmArenaClient@ playground = cast<CSmArenaClient>(GetApp().CurrentPlayground);
-
-			if(playground.GameTerminals.Length <= 0
-       || playground.GameTerminals[0].UISequence_Current != ESGamePlaygroundUIConfig__EUISequence::Playing
-       || playground.GameTerminals[0].GUIPlayer is null
-       || playground.Arena is null
-       || playground.Map is null) {
-	      this.inGame = false;
-	      return;
-	    }
-
-			CGameTerminal@ terminal = cast<CGameTerminal>(playground.GameTerminals[0]);
-			CSmPlayer@ player = cast<CSmPlayer>(terminal.GUIPlayer);
-	    CSmScriptPlayer@ scriptApi = cast<CSmScriptPlayer>(player.ScriptAPI);
-
-			if(scriptApi is null) {
-				this.inGame = false;
-				return;
-			}
-			// Update ingame data used to show in ui
-			this.data.DisplaySpeed = scriptApi.Speed * 3.6f;
-			this.data.InputIsBraking = scriptApi.InputIsBraking;
-			this.data.InputGasPedal = scriptApi.InputGasPedal;
-
-			this.data.EngineRpm = scriptApi.EngineRpm;
-			// Visual correction for low rpm nr
-			if (scriptApi.EngineRpm < 900) {
-				this.data.EngineRpm = 900 + scriptApi.EngineRpm;
-			}
-
-			if (scriptApi.EngineCurGear > this.data.EngineCurGear) {
-				print(Text::Format("gear up to %d", scriptApi.EngineCurGear) + Text::Format(", speed: %d", this.data.DisplaySpeed) + Text::Format(", rpm: %.f", this.data.EngineRpm));
-			} else if (scriptApi.EngineCurGear < this.data.EngineCurGear) {
-				print(Text::Format("gear down to %d", scriptApi.EngineCurGear) + Text::Format(", speed: %d", this.data.DisplaySpeed) + Text::Format(", rpm: %.f", this.data.EngineRpm));
-			}
-			this.data.EngineCurGear = scriptApi.EngineCurGear;
-
-			this.inGame = true;
-		}
-
-		// Render function
+    // Render function
 		void Render() {
-			// Do nothing if we are not in game
-	    if (!this.inGame || !setting_enabled) {
+      // Do nothing if we are not in game
+	    if (!this.core.InGame) {
 	      return;
 	    }
 
-			int width = Draw::GetWidth();
+      CSmPlayer@ player = this.core.Player();
+      if (player is null) {
+        return;
+      }
+
+      Nitro::Vehicle vehicle = Nitro::Vehicle(this.core.Scene(), player);
+      if (vehicle.State is null) {
+        return;
+      }
+
+      int width = Draw::GetWidth();
 			int height = Draw::GetHeight();
-			Theme theme = Theme();
 
-			float startAngle = 135.0f;
-			float endAngle = 405.0f;
-			float angleTotal = endAngle - startAngle;
-			float fontSizeRpmDigits = (width * 0.014) * setting_scale;
-			float fontSizeLabel = (width * 0.01) * setting_scale;
-			float fontSizeGear = (width * 0.04) * setting_scale;
-			float fontSizeSpeed = (width * 0.02) * setting_scale;
+      // Set Size
+      float size = (width * 0.15) * setting_scale;
+      // Set Position
+      float posX = (width - size) * setting_posX + (size/2);
+      float posY = (height - (size / 2)) * 1.03;
+      vec2 pose = vec2(posX, posY);
 
-			float radiusOuterRing =  (width * 0.078125) * setting_scale;
-			float radiusInnerRing = (width * 0.0703125) * setting_scale;
+      float startAngle = 140.0f;
+      float endAngle = 375.0f;
+      float angleTotal = endAngle - startAngle;
 
-			float tmp = radiusOuterRing - (radiusOuterRing * Math::Sin(DegreeToRadiant(startAngle)));
-			vec2 positionGauge((width - (radiusOuterRing * 2.0f)) * setting_posX + radiusOuterRing, (height - (radiusOuterRing * 2.0f) + tmp) * setting_posY + radiusOuterRing);
+      // background
+      nvg::BeginPath();
+      nvg::Rect(pose.x-(size/2), pose.y-(size/2), size, size);
+      nvg::FillPaint(nvg::RadialGradient(vec2(pose.x, pose.y), size*0.475, size*0.5, this.theme.background, vec4(0, 0, 0, 0)));
+      nvg::Fill();
+      nvg::ClosePath();
 
-			// background
-			nvg::BeginPath();
-			nvg::Rect(positionGauge.x-radiusOuterRing, positionGauge.y-radiusOuterRing, radiusOuterRing*2, radiusOuterRing*2);
-			nvg::FillPaint(nvg::RadialGradient(vec2(positionGauge.x, positionGauge.y), radiusOuterRing*0.975, radiusOuterRing, theme.background, vec4(0, 0, 0, 0)));
-			nvg::Fill();
-			nvg::ClosePath();
+      // Rpm Bar
+      vec4 gearIndicatorColor = this.theme.rpmFill;
+      if (vehicle.RPM > 10500.0f) {
+        gearIndicatorColor = this.theme.rpmFillHigh;
+      } else if (vehicle.IsGearingDown) {
+        gearIndicatorColor = this.theme.rpmFillGearDown;
+      } else if (vehicle.IsGearingUp) {
+        gearIndicatorColor = this.theme.rpmFillGearUp;
+      }
+      nvg::StrokeColor(gearIndicatorColor);
 
-			// Inner Ring
-			nvg::StrokeColor(theme.rpmEdge);
-			nvg::StrokeWidth((height * 0.001) * setting_scale);
-			nvg::BeginPath();
-			nvg::Arc(positionGauge, radiusInnerRing, DegreeToRadiant(startAngle), DegreeToRadiant(endAngle), nvg::Winding::CW);
-			nvg::Stroke();
-			nvg::ClosePath();
+      nvg::StrokeWidth(size * 0.03f);
+      nvg::BeginPath();
+      nvg::Arc(pose, size*0.46, DegreeToRadiant(startAngle), DegreeToRadiant(startAngle + (angleTotal * (vehicle.RPM * 0.0001))), nvg::Winding::CW);
+      nvg::Stroke();
+      nvg::ClosePath();
 
-			// Outer Ring
-			nvg::BeginPath();
-			nvg::Arc(positionGauge, radiusOuterRing, DegreeToRadiant(startAngle), DegreeToRadiant(endAngle), nvg::Winding::CW);
-			nvg::Stroke();
-			nvg::ClosePath();
+      float fontSizeRpmDigits = (width * 0.01) * setting_scale;
+      float outerRadius = size * 0.48;
+      float innerRadius = size * 0.425;
+      float xs, ys, xe, ye, angle;
+      vec2 fvec2;
 
-			// ring bar
-			if(this.data.EngineRpm > 7250 and this.data.EngineRpm < 9500) {
-				nvg::StrokeColor(theme.rpmFillGearUp);
-			} else if (this.data.EngineRpm > 9500) {
-				nvg::StrokeColor(theme.rpmFillHigh);
-			}	else if (this.data.EngineRpm > 5500 and this.data.EngineRpm < 7251) {
-				nvg::StrokeColor(theme.rpmFillGearDown);
-			} else {
-				nvg::StrokeColor(theme.rpmFill);
-			}
+      // Inner Ring
+      nvg::StrokeColor(theme.rpmEdge);
+      nvg::StrokeWidth((height * 0.001) * setting_scale);
+      nvg::BeginPath();
+      nvg::Arc(pose, innerRadius, DegreeToRadiant(startAngle), DegreeToRadiant(endAngle+24), nvg::Winding::CW);
+      nvg::Stroke();
+      nvg::ClosePath();
 
-			nvg::StrokeWidth(radiusOuterRing - radiusInnerRing);
-			nvg::BeginPath();
-			nvg::Arc(positionGauge, radiusInnerRing + ((radiusOuterRing - radiusInnerRing) * 0.5f), DegreeToRadiant(startAngle), DegreeToRadiant(startAngle + (angleTotal * 0.000083 * this.data.EngineRpm)), nvg::Winding::CW);
-			nvg::Stroke();
-			nvg::ClosePath();
+      // Draw steps
+      nvg::StrokeColor(this.theme.rpmStep);
+      nvg::StrokeWidth((height * 0.0015f) * setting_scale);
+      for(int i = 0; i < 12; i++)	{
+        nvg::BeginPath();
+        angle = startAngle + (angleTotal * 0.1 * float(i));
+        xs = pose.x + innerRadius * Math::Cos(DegreeToRadiant(angle));
+        ys = pose.y + innerRadius * Math::Sin(DegreeToRadiant(angle));
+        xe = pose.x + outerRadius * Math::Cos(DegreeToRadiant(angle));
+        ye = pose.y + outerRadius * Math::Sin(DegreeToRadiant(angle));
+        nvg::MoveTo(vec2(xs, ys));
+        nvg::LineTo(vec2(xe, ye));
+        nvg::Stroke();
+        nvg::ClosePath();
+        fvec2 = Draw::MeasureString(i + "", font, fontSizeRpmDigits);
+        fvec2.x = fvec2.x * 0.425f + (height * 0.002166f);
+        fvec2.y = fvec2.y * 0.425f;
+        xs = pose.x + (innerRadius - (height * 0.015f)) * Math::Cos(DegreeToRadiant(angle));
+        ys = pose.y + (innerRadius - (height * 0.015f)) * Math::Sin(DegreeToRadiant(angle));
+        Draw::DrawString(vec2(xs, ys) - fvec2, theme.fontRpmDigits, i + "", font, fontSizeRpmDigits);
+      }
 
-			float xs, ys, xe, ye, angle;
-			vec2 fvec2;
+      // rpm label
+      float fontSizeLabel = (width * 0.0075) * setting_scale;
+      fvec2 = Draw::MeasureString("RPM x 1000", font, fontSizeLabel/2);
+      fvec2.y = (height * 0.09f) * setting_scale;
+      Draw::DrawString(vec2(pose.x - fvec2.x, pose.y - fvec2.y + (height * 0.005f)), theme.font, "RPM x 1000", font, fontSizeLabel);
 
-			// Drav start rpm step
-			nvg::StrokeColor(theme.rpmStep);
-			nvg::StrokeWidth((height * 0.0015f) * setting_scale);
+      // Draw needle
+      nvg::StrokeColor(theme.rpmNeedle);
+      nvg::StrokeWidth(height * 0.005f);
+      nvg::BeginPath();
+      xs = pose.x + (innerRadius/2) * Math::Cos(DegreeToRadiant(startAngle + (angleTotal * 0.0001 * vehicle.RPM)));
+      ys = pose.y + (innerRadius/2) * Math::Sin(DegreeToRadiant(startAngle + (angleTotal * 0.0001 * vehicle.RPM)));
+      xe = pose.x + innerRadius * Math::Cos(DegreeToRadiant(startAngle + (angleTotal * 0.0001 * vehicle.RPM)));
+      ye = pose.y + innerRadius * Math::Sin(DegreeToRadiant(startAngle + (angleTotal * 0.0001 * vehicle.RPM)));
+      nvg::MoveTo(vec2(xs, ys));
+      nvg::LineTo(vec2(xe, ye));
+      nvg::Stroke();
+      nvg::ClosePath();
 
-			// Draw steps
-			for(int i = 0; i < 13; i++)	{
-				nvg::BeginPath();
-				angle = startAngle + angleTotal * 0.083 * float(i);
-				xs = positionGauge.x + radiusInnerRing * Math::Cos(DegreeToRadiant(angle));
-				ys = positionGauge.y + radiusInnerRing * Math::Sin(DegreeToRadiant(angle));
-				xe = positionGauge.x + radiusOuterRing * Math::Cos(DegreeToRadiant(angle));
-				ye = positionGauge.y + radiusOuterRing * Math::Sin(DegreeToRadiant(angle));
-				nvg::MoveTo(vec2(xs, ys));
-				nvg::LineTo(vec2(xe, ye));
-				nvg::Stroke();
-				nvg::ClosePath();
-				fvec2 = Draw::MeasureString(i + "", font, fontSizeRpmDigits);
-				fvec2.x = fvec2.x * 0.5f + (height * 0.002f);
-				fvec2.y = fvec2.y * 0.5f;
-				xs = positionGauge.x + (radiusInnerRing - (height * 0.0148148f)) * Math::Cos(DegreeToRadiant(angle));
-				ys = positionGauge.y + (radiusInnerRing - (height * 0.0148148f)) * Math::Sin(DegreeToRadiant(angle));
-				Draw::DrawString(vec2(xs, ys) - fvec2, theme.fontRpmDigits, i + "", font, fontSizeRpmDigits);
-			}
+      // gear background
+      nvg::BeginPath();
+      nvg::Rect(pose.x-(size/4), pose.y-(size/4), (size/2), (size/2));
+      nvg::FillPaint(nvg::RadialGradient(vec2(pose.x, pose.y), size*0.21, size*0.22, vec4(0, 0, 0, 0.8), vec4(0, 0, 0, 0)));
+      nvg::Fill();
+      nvg::ClosePath();
 
-			// Draw needle
-			nvg::StrokeColor(theme.rpmNeedle);
-			nvg::StrokeWidth(height * 0.005f);
-			nvg::BeginPath();
-			xs = positionGauge.x;
-			ys = positionGauge.y;
-			xe = positionGauge.x + radiusInnerRing * Math::Cos(DegreeToRadiant(startAngle + (angleTotal * 0.000083 * this.data.EngineRpm)));
-			ye = positionGauge.y + radiusInnerRing * Math::Sin(DegreeToRadiant(startAngle + (angleTotal * 0.000083 * this.data.EngineRpm)));
-			nvg::MoveTo(vec2(xs, ys));
-			nvg::LineTo(vec2(xe, ye));
-			nvg::Stroke();
-			nvg::ClosePath();
+      // Gear
+      string gear;
+      if (vehicle.Speed < 2) {
+        gear = "N";
+      } else if (vehicle.State.CurGear == 0) {
+        gear = "R";
+      } else {
+        gear = vehicle.State.CurGear + "";
+      }
 
-			// rpm label
-			fvec2 = Draw::MeasureString("rpm", font, fontSizeLabel/2);
-			fvec2.y = (height * 0.10f) * setting_scale;
-			Draw::DrawString(vec2(positionGauge.x - fvec2.x, positionGauge.y - fvec2.y + (height * 0.005f)), theme.font, "rpm", font, fontSizeLabel);
-			fvec2 = Draw::MeasureString("X 100", font, fontSizeLabel/2);
-			fvec2.y = (height * 0.085f) * setting_scale;
-			Draw::DrawString(vec2(positionGauge.x - fvec2.x, positionGauge.y - fvec2.y + (height * 0.005f)), theme.font, "x 1000", font, fontSizeLabel/1.3);
+      float fontSizeGear = (width * 0.04) * setting_scale;
+      fvec2 = Draw::MeasureString(gear, font, fontSizeGear/2);
+      fvec2.y = (height * 0.075f) * setting_scale;
+      Draw::DrawString(vec2(pose.x - fvec2.x, pose.y - (fvec2.y/2)), vec4(gearIndicatorColor.x, gearIndicatorColor.y, gearIndicatorColor.z, 1.0f), gear, font, fontSizeGear);
 
-			// Gear
-			string gear;
-			if (this.data.DisplaySpeed < 2) {
-				gear = "N";
-			} else if (this.data.EngineCurGear == 0) {
-				gear = "R";
-			} else {
-				gear = this.data.EngineCurGear + "";
-			}
-			fvec2 = Draw::MeasureString(gear, font, fontSizeGear/2);
-			fvec2.y = (height * 0.08f) * setting_scale;
-			Draw::DrawString(vec2(positionGauge.x - fvec2.x, positionGauge.y - fvec2.y + (height * 0.005f)), theme.font, gear, font, fontSizeGear);
 
-			// Speed label
-			fvec2 = Draw::MeasureString("km/h", font, fontSizeLabel/2);
-			fvec2.y = (height * -0.03f) * setting_scale;
-			Draw::DrawString(vec2(positionGauge.x - fvec2.x, positionGauge.y - fvec2.y + (height * 0.005f)), theme.font, "km/h", font, fontSizeLabel);
+      // Speed
+      float fontSizeSpeed = (width * 0.02) * setting_scale;
+      string speed = Text::Format("%.f", vehicle.Speed);
+      fvec2 = Draw::MeasureString(speed, font, fontSizeSpeed/2);
+      fvec2.y = (height * -0.07) * setting_scale;
+      Draw::DrawString(vec2(pose.x - fvec2.x, pose.y - fvec2.y), theme.font, speed, font, fontSizeSpeed);
+      // Speed label
+      fvec2 = Draw::MeasureString("km/h", font, fontSizeLabel/2);
+      fvec2.y = (height * -0.055f) * setting_scale;
+      Draw::DrawString(vec2(pose.x - fvec2.x, pose.y - fvec2.y + (height * 0.005f)), theme.font, "km/h", font, fontSizeLabel);
 
-			// Break indicator
-			float dotSize = fontSizeSpeed/2;
-			if (this.data.InputIsBraking) {
-				nvg::BeginPath();
-				float breakDotX = positionGauge.x - (fvec2.x * 2.5);
-				float breakDotY = positionGauge.y - (fvec2.y * 1.15);
-				nvg::Rect(breakDotX, breakDotY, dotSize, dotSize);
-				nvg::FillPaint(nvg::RadialGradient(vec2(breakDotX+(dotSize/2), breakDotY+(dotSize/2)), dotSize/4, dotSize/2, vec4(1, 0, 0, 1), vec4(0, 0, 0, 0)));
-				nvg::Fill();
-				nvg::ClosePath();
-			}
-			if (this.data.InputGasPedal > 0) {
-				nvg::BeginPath();
-				float gasDotX = positionGauge.x - (fvec2.x * -1.5);
-				float gasDotY = positionGauge.y - (fvec2.y * 1.15);
-				nvg::Rect(gasDotX, gasDotY, dotSize, dotSize);
-				nvg::FillPaint(nvg::RadialGradient(vec2(gasDotX+(dotSize/2), gasDotY+(dotSize/2)), dotSize/4, dotSize/2, vec4(0, 1, 0, 1), vec4(0, 0, 0, 0)));
-				nvg::Fill();
-				nvg::ClosePath();
-			}
+      // Break indicator
+      float dotSize = fontSizeSpeed/2;
+      if (vehicle.State.InputIsBraking) {
+        nvg::BeginPath();
+        float breakDotX = pose.x - (fvec2.x * 0.5);
+        float breakDotY = pose.y - (fvec2.y * 0.6);
+        nvg::Rect(breakDotX, breakDotY, dotSize, dotSize);
+        nvg::FillPaint(nvg::RadialGradient(vec2(breakDotX+(dotSize/2), breakDotY+(dotSize/2)), dotSize/4, dotSize/2, vec4(1, 0, 0, 1), vec4(0, 0, 0, 0)));
+        nvg::Fill();
+        nvg::ClosePath();
+      }
 
-			// Speed
-			fvec2 = Draw::MeasureString(this.data.DisplaySpeed + "", font, fontSizeSpeed/2);
-			fvec2.y = (height * -0.05) * setting_scale;
-			Draw::DrawString(vec2(positionGauge.x - fvec2.x, positionGauge.y - fvec2.y + (height * 0.005f)), theme.font, this.data.DisplaySpeed + "", font, fontSizeSpeed);
-		}
-	}
+      if (vehicle.State.InputGasPedal > 0) {
+        nvg::BeginPath();
+        float gasDotX = pose.x - (fvec2.x * 0.5);
+        float gasDotY = pose.y - (fvec2.y * -0.9);
+        nvg::Rect(gasDotX, gasDotY, dotSize, dotSize);
+        nvg::FillPaint(nvg::RadialGradient(vec2(gasDotX+(dotSize/2), gasDotY+(dotSize/2)), dotSize/4, dotSize/2, vec4(0, 1, 0, 1), vec4(0, 0, 0, 0)));
+        nvg::Fill();
+        nvg::ClosePath();
+      }
+
+      if (vehicle.State.InputSteer < 0) {
+        nvg::BeginPath();
+        float gasDotX = pose.x - (fvec2.x * 4);
+        float gasDotY = pose.y - (fvec2.y * -0.0001);
+        nvg::Rect(gasDotX, gasDotY, dotSize, dotSize);
+        nvg::FillPaint(nvg::RadialGradient(vec2(gasDotX+(dotSize/2), gasDotY+(dotSize/2)), dotSize/4, dotSize/2, this.theme.rpmFillGearDown, vec4(0, 0, 0, 0)));
+        nvg::Fill();
+        nvg::ClosePath();
+      }
+      if (vehicle.State.InputSteer > 0) {
+        nvg::BeginPath();
+        float gasDotX = pose.x - (fvec2.x * -2.5);
+        float gasDotY = pose.y - (fvec2.y * -0.0001);
+        nvg::Rect(gasDotX, gasDotY, dotSize, dotSize);
+        nvg::FillPaint(nvg::RadialGradient(vec2(gasDotX+(dotSize/2), gasDotY+(dotSize/2)), dotSize/4, dotSize/2, this.theme.rpmFillGearDown, vec4(0, 0, 0, 0)));
+        nvg::Fill();
+        nvg::ClosePath();
+      }
+    }
+  }
 }
