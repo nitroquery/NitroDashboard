@@ -171,7 +171,7 @@ namespace Nitro {
       // Break indicator
       if (vehicle.State.InputIsBraking) {
         float fontSizeBreak = (width * 0.01) * setting_scale;
-        fvec2 = Draw::MeasureString("BREAK", font, fontSizeBreak/2);
+        fvec2 = Draw::MeasureString("BRAKE", font, fontSizeBreak/2);
         fvec2.y = (height * -0.025f) * setting_scale;
 
         nvg::BeginPath();
@@ -180,7 +180,7 @@ namespace Nitro {
         nvg::Fill();
         nvg::ClosePath();
 
-        Draw::DrawString(vec2(pose.x - fvec2.x, pose.y - fvec2.y + (height * 0.005f)), vec4(1.0f, 1.0f, 1.0f, 1.0f), "BREAK", font, fontSizeBreak);
+        Draw::DrawString(vec2(pose.x - fvec2.x, pose.y - fvec2.y + (height * 0.005f)), vec4(1.0f, 1.0f, 1.0f, 1.0f), "BRAKE", font, fontSizeBreak);
 
       }
 
