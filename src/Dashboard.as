@@ -151,9 +151,9 @@ namespace Nitro {
         gear = vehicle.State.CurGear + "";
       }
 
-      float fontSizeGear = (width * 0.025) * setting_scale;
+      float fontSizeGear = (width * 0.020) * setting_scale;
       fvec2 = Draw::MeasureString(gear, font, fontSizeGear/2);
-      fvec2.y = (height * 0.045f) * setting_scale;
+      fvec2.y = (height * 0.025) * setting_scale;
       Draw::DrawString(vec2(pose.x - fvec2.x, pose.y - (fvec2.y/2)), vec4(gearIndicatorColor.x, gearIndicatorColor.y, gearIndicatorColor.z, 1.0f), gear, font, fontSizeGear);
 
 
@@ -175,12 +175,12 @@ namespace Nitro {
         fvec2.y = (height * -0.025f) * setting_scale;
 
         nvg::BeginPath();
-        nvg::Rect(pose.x - (fvec2.x * 1.2), pose.y - fvec2.y + (height * -0.0025f), size*0.2, size*0.1);
+        nvg::Rect(pose.x - (fvec2.x * 1.2), pose.y - fvec2.y + (height * -0.0025f), size*0.2, size*0.08);
         nvg::FillColor(vec4(1, 0, 0, 0.5));
         nvg::Fill();
         nvg::ClosePath();
 
-        Draw::DrawString(vec2(pose.x - fvec2.x, pose.y - fvec2.y + (height * 0.005f)), vec4(1.0f, 1.0f, 1.0f, 1.0f), "BRAKE", font, fontSizeBreak);
+        Draw::DrawString(vec2(pose.x - fvec2.x, pose.y - fvec2.y + (height * 0.001f)), vec4(1.0f, 1.0f, 1.0f, 1.0f), "BRAKE", font, fontSizeBreak);
 
       }
 
