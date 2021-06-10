@@ -27,3 +27,37 @@ vec4 Setting_Theme_Negative = vec4(0.757f, 0.0f, 0.082f, 1.0f);
 vec4 Setting_Theme_Info = vec4(0.192f, 0.8f, 0.925f, 1.0f);
 [Setting category="Customize" name="Warning color" color]
 vec4 Setting_Theme_Warning = vec4(0.949f, 0.753f, 0.216f, 1.0f);
+
+[Setting category="Demo" name="Enable Demo Mode"]
+bool Setting_Enabled_Demo = false;
+[Setting category="Demo" name="Set engine RPM" min=0 max=11000]
+int Setting_Demo_RPM = 6500;
+[Setting category="Demo" name="Set Speed" min=0 max=700]
+int Setting_Demo_Speed = 469;
+[Setting category="Demo" name="Set Gear" min=0 max=5]
+int Setting_Demo_Gear = 5;
+
+enum DemoGearState {
+  Normal,
+  GearUp,
+  GearDown
+}
+[Setting category="Demo" name="Set Gear up/down state"]
+DemoGearState Setting_Demo_GearState = DemoGearState::GearUp;
+[Setting category="Demo" name="Traction Control Light"]
+bool Setting_Demo_TractionControl = true;
+[Setting category="Demo" name="Icing Light"]
+bool Setting_Demo_Icing = true;
+[Setting category="Demo" name="Airbrake Light"]
+bool Setting_Demo_AirBrake = true;
+[Setting category="Demo" name="Engine Fault Light"]
+bool Setting_Demo_EngineFault = true;
+
+enum DemoSpecialState {
+  Normal,
+  Turbo,
+  ReactorBoostLvl1,
+  ReactorBoostLvl2
+}
+[Setting category="Demo" name="Special state"]
+DemoSpecialState Setting_Demo_SpecialState = DemoSpecialState::Normal;

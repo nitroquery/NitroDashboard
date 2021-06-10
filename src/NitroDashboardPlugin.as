@@ -4,6 +4,7 @@ Nitro::Dashboard@ dash;
 void Main() {
   @dash = Nitro::Dashboard();
   dash.Init();
+  refreshTheme();
 }
 
 // Called every frame. dt is the delta time (milliseconds since last frame).
@@ -33,6 +34,11 @@ void RenderInterface() {
 
 // Called when a setting in the settings panel was changed.
 void OnSettingsChanged() {
+  refreshTheme();
+}
+
+// Refresh Theme
+void refreshTheme() {
   if (dash is null) {
     return;
   }

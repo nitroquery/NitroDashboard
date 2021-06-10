@@ -31,11 +31,12 @@ namespace Nitro {
     }
 
     void UpdateVechicleData(CSceneVehicleVisState@ state) {
+      if (Setting_Enabled_Demo) return;
 
       uint rpm = OpenUtils::Vehicle::GetRPM(state);
       this.Speed = uint(Math::Abs(state.FrontSpeed * 3.6f));
       this.EngineOff = rpm == 0 && this.Speed > 0;
-      if (rpm < 1000) rpm += 1000;
+      if (rpm < 1000 && !this.EngineOff) rpm += 1000;
       this.RPM = rpm;
       this.Gear = state.CurGear;
       this.GearUp = false;
@@ -84,6 +85,68 @@ namespace Nitro {
       }
     }
 
+    void SetVechicleDemoData() {
+      uint rpm = uint(Setting_Demo_RPM);
+      this.Speed = uint(Setting_Demo_Speed);
+      this.EngineOff = (rpm == 0 && this.Speed > 0) || Setting_Demo_EngineFault;
+      if (rpm < 1000 && !this.EngineOff) rpm += 1000;
+      this.RPM = rpm;
+      this.Gear = uint(Setting_Demo_Gear);
+      this.GearUp = Setting_Demo_GearState == DemoGearState::GearUp;
+      this.GearDown = Setting_Demo_GearState == DemoGearState::GearDown;
+      this.TractionControl = Setting_Demo_TractionControl;
+      this.Icing = Setting_Demo_Icing;
+      this.AirBrake = Setting_Demo_AirBrake;
+      this.IsTurbo = Setting_Demo_SpecialState == DemoSpecialState::Turbo;
+
+      if (Setting_Demo_SpecialState == DemoSpecialState::ReactorBoostLvl1) {
+        this.ReactorBoostLvl = ESceneVehicleVisReactorBoostLvl::Lvl1;
+      } else if (Setting_Demo_SpecialState == DemoSpecialState::ReactorBoostLvl2) {
+        this.ReactorBoostLvl = ESceneVehicleVisReactorBoostLvl::Lvl2;
+      } else {
+        this.ReactorBoostLvl = ESceneVehicleVisReactorBoostLvl::None;
+      }
+
+      if (this.Gear == 0) {
+        // Gear up/down
+        switch (this.Gear) {
+          case 1:
+            if (rpm > 10000) {
+              this.GearUp = true;
+            }
+          break;
+          case 2:
+            if (rpm > 9500) {
+              this.GearUp = true;
+            } else if (rpm < 5750) {
+              this.GearDown = true;
+            }
+          break;
+          case 3:
+            if (rpm > 10000) {
+              this.GearUp = true;
+            } else if (rpm < 6600) {
+              this.GearDown = true;
+            }
+          case 4:
+            if (rpm > 10000) {
+              this.GearUp = true;
+            } else if (rpm < 6250) {
+              this.GearDown = true;
+            }
+          break;
+          case 5:
+            if (rpm < 7000) {
+              this.GearDown = true;
+            }
+          break;
+          default:
+            this.GearUp = false;
+          break;
+        }
+      }
+    }
+
     // Render Gauge
     void Render(OpenUtils::Theme theme) override {
       if (!this.Visible) return;
@@ -107,13 +170,26 @@ namespace Nitro {
       nvg::ClosePath();
 
       vec4 stateColor = theme.Accent;
-      if (this.RPM > 10500) {
-        stateColor = theme.Negative;
-      } else if (this.GearDown || this.IsTurbo) {
-        stateColor = theme.Warning;
-      } else if (this.GearUp) {
-        stateColor = theme.Positive;
+
+      // Boost
+      switch (this.ReactorBoostLvl) {
+        case ESceneVehicleVisReactorBoostLvl::Lvl1:
+          stateColor = theme.Warning;
+        break;
+        case ESceneVehicleVisReactorBoostLvl::Lvl2:
+          stateColor = theme.Negative;
+        break;
+        default:
+          if (this.RPM > 10500) {
+            stateColor = theme.Negative;
+          } else if (this.GearDown || this.IsTurbo) {
+            stateColor = theme.Warning;
+          } else if (this.GearUp) {
+            stateColor = theme.Positive;
+          }
+        break;
       }
+
       nvg::StrokeColor(stateColor);
       nvg::StrokeWidth(size * 0.04f);
       nvg::BeginPath();
@@ -190,8 +266,8 @@ namespace Nitro {
       nvg::StrokeColor(theme.Primary);
       nvg::StrokeWidth(size * 0.01f);
       nvg::BeginPath();
-      xs = pose.x + (innerRadius/2.5) * Math::Cos(OpenUtils::DegreeToRadiant(startAngle + (angleTotal * 0.0001 * this.RPM)));
-      ys = pose.y + (innerRadius/2.5) * Math::Sin(OpenUtils::DegreeToRadiant(startAngle + (angleTotal * 0.0001 * this.RPM)));
+      xs = pose.x + (innerRadius/3) * Math::Cos(OpenUtils::DegreeToRadiant(startAngle + (angleTotal * 0.0001 * this.RPM)));
+      ys = pose.y + (innerRadius/3) * Math::Sin(OpenUtils::DegreeToRadiant(startAngle + (angleTotal * 0.0001 * this.RPM)));
       xe = pose.x + innerRadius * Math::Cos(OpenUtils::DegreeToRadiant(startAngle + (angleTotal * 0.0001 * this.RPM)));
       ye = pose.y + innerRadius * Math::Sin(OpenUtils::DegreeToRadiant(startAngle + (angleTotal * 0.0001 * this.RPM)));
       nvg::MoveTo(vec2(xs, ys));

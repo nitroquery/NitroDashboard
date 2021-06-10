@@ -35,6 +35,8 @@ namespace Nitro {
         this.show = false;
         this.Gauge.Visible = this.show;
         return;
+      } else if (Setting_Enabled_Demo) {
+        cast<Gauge>(this.Gauge).SetVechicleDemoData();
       } else {
         cast<Gauge>(this.Gauge).UpdateVechicleData(state);
       }
