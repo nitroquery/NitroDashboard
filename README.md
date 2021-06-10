@@ -4,6 +4,8 @@
 [![GitHub issues](https://img.shields.io/github/issues/nitroquery/NitroDashboard)](https://github.com/nitroquery/NitroDashboard/issues)
 [![GitHub license](https://img.shields.io/github/license/nitroquery/NitroDashboard)](https://github.com/nitroquery/NitroDashboard/blob/main/LICENSE)
 
+![screenshot](assets/images/screenshot.png)
+
 **Overlay to shows Gauge with following info:**
 
 - Engine RPM Gauge
