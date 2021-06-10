@@ -10,9 +10,11 @@
   - Color change when car is about gear up or down
 - Vehicle Speed
 - Current Gear
-- Steering indicators
-- Brake indicator
-- Gas pedal indicator
+- AirBrake indicator
+- Engine indicator
+- Icing indicator
+- Drift indicator
+- Turbo and Boost states
 
 ## installation
 
@@ -23,7 +25,9 @@
 
 **2. Extract downloaded plugin into your Openplanet User Folder**
 
-Contents should be copied to `<user-folder>/Scripts/NitroDashboard`
+`NitroDashboard.as` should be copied to `<user-folder>/Plugins/`,
+
+**NOTICE! Do not copy plugin file into Legacy `Script` Directory**
 
 **3. Enable Nitro Dashboard Plugin**
 
