@@ -41,11 +41,26 @@ namespace Nitro {
       this.Gear = state.CurGear;
       this.GearUp = false;
       this.GearDown = false;
-      this.TractionControl = state.IsGroundContact && (state.FLSlipCoef + state.FRSlipCoef + state.RLSlipCoef + state.RRSlipCoef) > 0.0f;
+
       this.Icing = (state.FLIcing01 + state.FRIcing01 + state.RLIcing01 + state.RRSlipCoef) > 1;
       this.AirBrake = state.AirBrakeNormed > 0 && !state.IsGroundContact;
       this.IsTurbo = state.IsTurbo;
       this.ReactorBoostLvl = state.ReactorBoostLvl;
+
+      this.TractionControl = false;
+      if (state.IsGroundContact) {
+        switch (Setting_Traction_Behaviour) {
+          case TractionBehaviour::FrontWheelsOnly:
+            this.TractionControl = (state.FLSlipCoef + state.FRSlipCoef) > 0.0f;
+            break;
+          case TractionBehaviour::AllWheels:
+            this.TractionControl = (state.FLSlipCoef + state.FRSlipCoef + state.RLSlipCoef + state.RRSlipCoef) > 0.0f;
+            break;
+          default: // TractionBehaviour::RearWheelsOnly
+            this.TractionControl = (state.RLSlipCoef + state.RRSlipCoef) > 0.0f;
+            break;
+        }
+      }
 
       // Gear up/down
       switch (this.Gear) {

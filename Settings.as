@@ -1,5 +1,15 @@
-[Setting category="General" name="Visible"]
+[Setting category="General" name="Visible" description="If you have any issues with the Plugin or want to see more features you can report these on Github
+\\$69fhttps://github.com/nitroquery/NitroDashboard/issues\\$z"]
 bool Setting_Enabled = true;
+
+enum TractionBehaviour {
+  RearWheelsOnly, // Default
+  FrontWheelsOnly,
+  AllWheels,
+}
+
+[Setting category="General" name="Traction light behaviour" description="Select which wheel slips trigger the traction light."]
+TractionBehaviour Setting_Traction_Behaviour = TractionBehaviour::RearWheelsOnly;
 
 // Positioning settings
 [Setting category="Gauge" name="Move/Scale Gauge" description="Move and Scale the Gauge."]
