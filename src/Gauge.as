@@ -85,6 +85,8 @@ namespace Nitro {
       }
     }
 
+    // Displays demo data instead of real data.
+    // Useful when creating the theme
     void SetVechicleDemoData() {
       uint rpm = uint(Setting_Demo_RPM);
       this.Speed = uint(Setting_Demo_Speed);
