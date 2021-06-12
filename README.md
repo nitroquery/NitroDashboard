@@ -1,8 +1,9 @@
 # Nitro Dashboard
 
-![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/nitroquery/NitroDashboard)
+![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/nitroquery/NitroDashboard?include_prereleases)
 [![GitHub issues](https://img.shields.io/github/issues/nitroquery/NitroDashboard)](https://github.com/nitroquery/NitroDashboard/issues)
 [![GitHub license](https://img.shields.io/github/license/nitroquery/NitroDashboard)](https://github.com/nitroquery/NitroDashboard/blob/main/LICENSE)
+[![GitHub stars](https://img.shields.io/github/stars/nitroquery/NitroDashboard)](https://github.com/nitroquery/NitroDashboard/stargazers)
 
 ![screenshot](assets/images/screenshot.png)
 
