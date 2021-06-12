@@ -11,6 +11,7 @@ namespace Nitro {
     private bool EngineOff = false;
     private bool AirBrake = false;
     private bool IsTurbo = false;
+    private bool Wet = false;
     private ESceneVehicleVisReactorBoostLvl ReactorBoostLvl;
 
     Resources::Texture@ tractionIcon;
@@ -18,6 +19,7 @@ namespace Nitro {
     Resources::Texture@ icingIcon;
     Resources::Texture@ airbrakeIcon;
     Resources::Texture@ inactiveIcon;
+    Resources::Texture@ wetIcon;
 
     // Contruct Gauge Widget
     Gauge() {
@@ -27,6 +29,7 @@ namespace Nitro {
       @icingIcon = Resources::GetTexture("assets/images/icons/icing.png");
       @airbrakeIcon = Resources::GetTexture("assets/images/icons/airbrake.png");
       @inactiveIcon = Resources::GetTexture("assets/images/icons/inactive.png");
+      @wetIcon = Resources::GetTexture("assets/images/icons/wet.png");
     }
 
     void UpdateVechicleData(CSceneVehicleVisState@ state) {
@@ -40,11 +43,12 @@ namespace Nitro {
       this.Gear = state.CurGear;
       this.GearUp = false;
       this.GearDown = false;
-
-      this.Icing = (state.FLIcing01 + state.FRIcing01 + state.RLIcing01 + state.RRSlipCoef) > 1;
-      this.AirBrake = state.AirBrakeNormed > 0 && !state.IsGroundContact;
       this.IsTurbo = state.IsTurbo;
       this.ReactorBoostLvl = state.ReactorBoostLvl;
+
+      this.Wet = state.WetnessValue01 > 0;
+      this.AirBrake = state.AirBrakeNormed > 0 && !state.IsGroundContact;
+      this.Icing = (state.FLIcing01 + state.FRIcing01 + state.RLIcing01 + state.RRSlipCoef) > 1;
 
       this.TractionControl = false;
       if (state.IsGroundContact) {
@@ -96,70 +100,6 @@ namespace Nitro {
         default:
           this.GearUp = false;
         break;
-      }
-    }
-
-    // Displays demo data instead of real data.
-    // Useful when creating the theme
-    void SetVechicleDemoData() {
-      uint rpm = uint(Setting_Demo_RPM);
-      this.Speed = uint(Setting_Demo_Speed);
-      this.EngineOff = (rpm == 0 && this.Speed > 0) || Setting_Demo_EngineFault;
-      if (rpm < 1000 && !this.EngineOff) rpm += 1000;
-      this.RPM = rpm;
-      this.Gear = uint(Setting_Demo_Gear);
-      this.GearUp = Setting_Demo_GearState == DemoGearState::GearUp;
-      this.GearDown = Setting_Demo_GearState == DemoGearState::GearDown;
-      this.TractionControl = Setting_Demo_TractionControl;
-      this.Icing = Setting_Demo_Icing;
-      this.AirBrake = Setting_Demo_AirBrake;
-      this.IsTurbo = Setting_Demo_SpecialState == DemoSpecialState::Turbo;
-
-      if (Setting_Demo_SpecialState == DemoSpecialState::ReactorBoostLvl1) {
-        this.ReactorBoostLvl = ESceneVehicleVisReactorBoostLvl::Lvl1;
-      } else if (Setting_Demo_SpecialState == DemoSpecialState::ReactorBoostLvl2) {
-        this.ReactorBoostLvl = ESceneVehicleVisReactorBoostLvl::Lvl2;
-      } else {
-        this.ReactorBoostLvl = ESceneVehicleVisReactorBoostLvl::None;
-      }
-
-      if (this.Gear == 0) {
-        // Gear up/down
-        switch (this.Gear) {
-          case 1:
-            if (rpm > 10000) {
-              this.GearUp = true;
-            }
-          break;
-          case 2:
-            if (rpm > 9500) {
-              this.GearUp = true;
-            } else if (rpm < 5750) {
-              this.GearDown = true;
-            }
-          break;
-          case 3:
-            if (rpm > 10000) {
-              this.GearUp = true;
-            } else if (rpm < 6600) {
-              this.GearDown = true;
-            }
-          case 4:
-            if (rpm > 10000) {
-              this.GearUp = true;
-            } else if (rpm < 6250) {
-              this.GearDown = true;
-            }
-          break;
-          case 5:
-            if (rpm < 7000) {
-              this.GearDown = true;
-            }
-          break;
-          default:
-            this.GearUp = false;
-          break;
-        }
       }
     }
 
@@ -231,16 +171,19 @@ namespace Nitro {
 
       float iconSize = size * 0.09;
       // Engine Fault
-      this.renderDashIcon(this.EngineOff, engineFaultIcon, vec2(pose.x - (size * 0.23), pose.y - (size * 0.25)), iconSize);
+      this.renderDashIcon(this.EngineOff, engineFaultIcon, vec2(pose.x - (size * 0.23), pose.y - (size * 0.12)), iconSize);
 
       // Traction
-      this.renderDashIcon(this.TractionControl, tractionIcon, vec2(pose.x - (size * 0.11), pose.y - (size * 0.25)), iconSize);
+      this.renderDashIcon(this.TractionControl, tractionIcon, vec2(pose.x - (size * 0.16), pose.y - (size * 0.215)), iconSize);
 
       // Icing
-      this.renderDashIcon(this.Icing, icingIcon, vec2(pose.x + (size * 0.01), pose.y - (size * 0.25)), iconSize);
+      this.renderDashIcon(this.Icing, icingIcon, vec2(pose.x - (size * 0.05), pose.y - (size * 0.25)), iconSize);
 
       // AirBrake
-      this.renderDashIcon(this.AirBrake, airbrakeIcon, vec2(pose.x + (size * 0.13), pose.y - (size * 0.25)), iconSize);
+      this.renderDashIcon(this.AirBrake, airbrakeIcon, vec2(pose.x + (size * 0.06), pose.y - (size * 0.22)), iconSize);
+
+      // Wet
+      this.renderDashIcon(this.Wet, wetIcon, vec2(pose.x + (size * 0.14), pose.y - (size * 0.13)), iconSize);
 
 
       // Change font
@@ -358,6 +301,70 @@ namespace Nitro {
     void renderDashIcon(bool visible, Resources::Texture@ txt, vec2 pos, float size) {
       if (visible) Draw::DrawTexture(txt, pos, vec2(size, size));
       else Draw::DrawTexture(inactiveIcon, pos, vec2(size, size));
+    }
+
+    // Displays demo data instead of real data.
+    // Useful when creating the theme
+    void SetVechicleDemoData() {
+      uint rpm = uint(Setting_Demo_RPM);
+      this.Speed = uint(Setting_Demo_Speed);
+      this.EngineOff = (rpm == 0 && this.Speed > 0) || Setting_Demo_EngineFault;
+      if (rpm < 1000 && !this.EngineOff) rpm += 1000;
+      this.RPM = rpm;
+      this.Gear = uint(Setting_Demo_Gear);
+      this.GearUp = Setting_Demo_GearState == DemoGearState::GearUp;
+      this.GearDown = Setting_Demo_GearState == DemoGearState::GearDown;
+      this.TractionControl = Setting_Demo_TractionControl;
+      this.Icing = Setting_Demo_Icing;
+      this.AirBrake = Setting_Demo_AirBrake;
+      this.IsTurbo = Setting_Demo_SpecialState == DemoSpecialState::Turbo;
+      this.Wet = Setting_Demo_Wet;
+      if (Setting_Demo_SpecialState == DemoSpecialState::ReactorBoostLvl1) {
+        this.ReactorBoostLvl = ESceneVehicleVisReactorBoostLvl::Lvl1;
+      } else if (Setting_Demo_SpecialState == DemoSpecialState::ReactorBoostLvl2) {
+        this.ReactorBoostLvl = ESceneVehicleVisReactorBoostLvl::Lvl2;
+      } else {
+        this.ReactorBoostLvl = ESceneVehicleVisReactorBoostLvl::None;
+      }
+
+      if (this.Gear == 0) {
+        // Gear up/down
+        switch (this.Gear) {
+          case 1:
+            if (rpm > 10000) {
+              this.GearUp = true;
+            }
+          break;
+          case 2:
+            if (rpm > 9500) {
+              this.GearUp = true;
+            } else if (rpm < 5750) {
+              this.GearDown = true;
+            }
+          break;
+          case 3:
+            if (rpm > 10000) {
+              this.GearUp = true;
+            } else if (rpm < 6600) {
+              this.GearDown = true;
+            }
+          case 4:
+            if (rpm > 10000) {
+              this.GearUp = true;
+            } else if (rpm < 6250) {
+              this.GearDown = true;
+            }
+          break;
+          case 5:
+            if (rpm < 7000) {
+              this.GearDown = true;
+            }
+          break;
+          default:
+            this.GearUp = false;
+          break;
+        }
+      }
     }
   }
 }

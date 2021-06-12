@@ -79,6 +79,8 @@ bool Setting_Demo_Icing = true;
 bool Setting_Demo_AirBrake = true;
 [Setting category="Demo Mode" name="Engine Fault Light"]
 bool Setting_Demo_EngineFault = true;
+[Setting category="Demo Mode" name="Wet Light"]
+bool Setting_Demo_Wet = true;
 
 enum DemoSpecialState {
   Normal,
