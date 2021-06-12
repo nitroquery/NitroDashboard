@@ -11,7 +11,6 @@ namespace Nitro {
     private bool EngineOff = false;
     private bool AirBrake = false;
     private bool IsTurbo = false;
-    private ESceneVehicleVisEvent EventType;
     private ESceneVehicleVisReactorBoostLvl ReactorBoostLvl;
 
     Resources::Texture@ tractionIcon;
