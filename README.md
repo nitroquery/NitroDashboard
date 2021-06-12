@@ -27,7 +27,7 @@
 
 **2. Extract downloaded plugin into your Openplanet User Folder**
 
-`NitroDashboard.as` should be copied to `<user-folder>/Plugins/`,
+`NitroDashboard.op` should be copied to `<user-folder>/Plugins/`,
 
 **NOTICE! Do not copy plugin file into Legacy `Script` Directory**
 
