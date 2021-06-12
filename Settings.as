@@ -11,6 +11,9 @@ enum TractionBehaviour {
 [Setting category="General" name="Traction light behaviour" description="Select which wheel slips trigger the traction light."]
 TractionBehaviour Setting_Traction_Behaviour = TractionBehaviour::RearWheelsOnly;
 
+[Setting category="General" name="Hide Dashboard when interface is hidden"]
+bool Setting_HideOnHiddenInterface = true;
+
 // Positioning settings
 [Setting category="Gauge" name="Move/Scale Gauge" description="Move and Scale the Gauge."]
 bool Setting_Gauge_MoveAndScale = false;

@@ -20,6 +20,14 @@ namespace Nitro {
     void Update(float dt) {
       if (!this.loaded) return;
 
+      CTrackMania@ app = cast<CTrackMania>(GetApp());
+      if (Setting_HideOnHiddenInterface) {
+        if (app.CurrentPlayground is null || app.CurrentPlayground.Interface is null || Dev::GetOffsetUint32(app.CurrentPlayground.Interface, 0x1C) == 0) {
+          this.show = false;
+          return;
+        }
+      }
+
       // Current player / spectated player
       CSmPlayer@ player = OpenUtils::GetGUIPlayer();
       if (player is null) {
@@ -28,7 +36,6 @@ namespace Nitro {
         return;
       }
 
-      CTrackMania@ app = cast<CTrackMania>(GetApp());
       CSceneVehicleVisState@ state = OpenUtils::Vehicle::GetVis(app.GameScene, player);
 
       if (state is null) {
