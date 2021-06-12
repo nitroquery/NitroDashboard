@@ -13,7 +13,6 @@ namespace Nitro {
       @this.Gauge = Nitro::Gauge();
       this.Theme = OpenUtils::Theme();
       this.loaded = true;
-      print("Dashboard.Init" + (this.loaded));
     }
 
     // Update data and theme before next frame
