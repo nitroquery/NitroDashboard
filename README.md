@@ -19,6 +19,11 @@
 - Drift indicator
 - Turbo and Boost states
 
+## Configuration
+Plugin has many configuration options under `Openplanet/Settings/NitroDashboard`
+
+![screenshot](assets/images/settings.jpg)
+
 ## installation
 
 **1. Download the plugin**
