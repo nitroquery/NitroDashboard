@@ -35,7 +35,7 @@ namespace Nitro {
     void UpdateVechicleData(CSceneVehicleVisState@ state) {
       if (Setting_Enabled_Demo) return;
 
-      uint rpm = OpenUtils::Vehicle::GetRPM(state);
+      uint rpm = Vehicle::GetRPM(state);
       this.Speed = uint(Math::Abs(state.FrontSpeed * 3.6f));
       this.EngineOff = rpm == 0 && this.Speed > 0;
       if (rpm < 1000 && !this.EngineOff) rpm += 1000;

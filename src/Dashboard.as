@@ -35,7 +35,7 @@ namespace Nitro {
         return;
       }
 
-      CSceneVehicleVisState@ state = OpenUtils::Vehicle::GetVis(app.GameScene, player);
+      CSceneVehicleVis@ state = Vehicle::GetVis(app.GameScene, player);
 
       if (state is null) {
         this.show = false;
@@ -44,7 +44,7 @@ namespace Nitro {
       } else if (Setting_Enabled_Demo) {
         cast<Gauge>(this.Gauge).SetVechicleDemoData();
       } else {
-        cast<Gauge>(this.Gauge).UpdateVechicleData(state);
+        cast<Gauge>(this.Gauge).UpdateVechicleData(state.AsyncState);
       }
 
       this.show = true;
