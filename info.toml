@@ -3,7 +3,7 @@ name = "Nitro Dashboard"
 author = "NitroQuery"
 category = "Overlay"
 siteid = 102
-version = "1.0.0"
+version = "1.1.0"
 blocks = [ "Plugin_NitroDashboard" ]
 # perms = "paid"
 
