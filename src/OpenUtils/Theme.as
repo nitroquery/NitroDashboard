@@ -1,4 +1,5 @@
 namespace OpenUtils {
+  // Theme is common shared theme for different plugins
   class Theme {
     vec4 Background;
     vec4 Primary;
@@ -10,6 +11,7 @@ namespace OpenUtils {
     vec4 Info;
     vec4 Warning;
 
+    // Contruc default theme
     Theme() {
       this.Background = vec4(0,0,0, 0.7);
       this.Primary = vec4(0.098,0.463,0.824, 1);

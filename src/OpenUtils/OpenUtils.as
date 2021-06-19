@@ -1,4 +1,8 @@
 namespace OpenUtils {
+  float DegreeToRadiant(float degrees) { return degrees * Math::PI / 180.0f; }
+
+  // GetGUIPlayer
+  // Returns Currently active player
   CSmPlayer@ GetGUIPlayer() {
     CTrackMania@ app = cast<CTrackMania>(GetApp());
     if (app.CurrentPlayground is null) {

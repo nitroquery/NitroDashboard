@@ -1,4 +1,5 @@
 namespace OpenUtils {
+  // Base class for UI Widgets
   class Widget {
     private string Name = 'Untitled';
     bool Visible = false;
