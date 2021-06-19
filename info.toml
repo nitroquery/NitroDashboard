@@ -8,7 +8,7 @@ blocks = [ "Plugin_NitroDashboard" ]
 # perms = "paid"
 
 [game]
-min_version = "2021-06-10"
+min_version = "2021-06-18"
 # max_version = "2021-06-03"
 
 [script]
