@@ -3,12 +3,12 @@ name = "Nitro Dashboard"
 author = "NitroQuery"
 category = "Overlay"
 siteid = 102
-version = "1.2.0"
+version = "1.3.0"
 blocks = [ "Plugin_NitroDashboard" ]
 # perms = "paid"
 
 [game]
-min_version = "2021-07-02"
+min_version = "2021-10-04"
 # max_version = "2021-06-03"
 
 [script]
