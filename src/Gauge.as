@@ -299,8 +299,9 @@ namespace Nitro {
 
     // Render dash indicator icons
     void renderDashIcon(bool visible, Resources::Texture@ txt, vec2 pos, float size) {
-      if (visible) Draw::DrawTexture(txt, pos, vec2(size, size));
-      else Draw::DrawTexture(inactiveIcon, pos, vec2(size, size));
+      UI::DrawList@ draw = UI::GetForegroundDrawList();
+      if (visible) draw.AddImage(txt, pos, vec2(size, size));
+      else draw.AddImage(inactiveIcon, pos, vec2(size, size));
     }
 
     // Displays demo data instead of real data.
