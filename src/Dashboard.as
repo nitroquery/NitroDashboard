@@ -27,15 +27,7 @@ namespace Nitro {
         }
       }
 
-      // Current player / spectated player
-      CSmPlayer@ player = OpenUtils::GetGUIPlayer();
-      if (player is null) {
-        this.show = false;
-        this.Gauge.Visible = false;
-        return;
-      }
-
-      CSceneVehicleVis@ state = Vehicle::GetVis(app.GameScene, player);
+      CSceneVehicleVisState@ state = VehicleState::ViewingPlayerState();
 
       if (state is null) {
         this.show = false;
@@ -44,7 +36,7 @@ namespace Nitro {
       } else if (Setting_Enabled_Demo) {
         cast<Gauge>(this.Gauge).SetVechicleDemoData();
       } else {
-        cast<Gauge>(this.Gauge).UpdateVechicleData(state.AsyncState);
+        cast<Gauge>(this.Gauge).UpdateVechicleData(state);
       }
 
       this.show = true;
