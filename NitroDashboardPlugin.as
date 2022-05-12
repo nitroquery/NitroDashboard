@@ -55,6 +55,17 @@ void refreshTheme() {
       dash.Theme.Info = vec4(0.192f, 0.8f, 0.925f, 1.0f);
       dash.Theme.Warning = vec4(0.949f, 0.753f, 0.216f, 1.0f);
     break;
+    case CurrentTheme::Nitro2022:
+      dash.Theme.Background = vec4(0.225295, 0.244019, 0.490348, 0.658824);
+      dash.Theme.Primary = vec4(1, 1, 1, 1);
+      dash.Theme.Secondary = vec4(0.625393, 0.871457, 0.880309, 1);
+      dash.Theme.Accent = vec4(0.190889, 0.490084, 0.760618, 1);
+      dash.Theme.Dark = vec4(1, 1, 1, 1);
+      dash.Theme.Positive = vec4(0.17325, 0.532819, 0.0740597, 1);
+      dash.Theme.Negative = vec4(0.757f, 0.0f, 0.082f, 1.0f);
+      dash.Theme.Info = vec4(0.192f, 0.8f, 0.925f, 1.0f);
+      dash.Theme.Warning = vec4(0.949f, 0.753f, 0.216f, 1.0f);
+    break;
     case CurrentTheme::Custom:
       dash.Theme.Background = Setting_Theme_Background;
       dash.Theme.Primary = Setting_Theme_Primary;

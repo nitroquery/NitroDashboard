@@ -26,6 +26,7 @@ float Setting_Gauge_Scale = 0.15f;
 enum CurrentTheme {
   Default,
   Nitro,
+  Nitro2022,
   Custom,
 }
 [Setting category="Theme" name="Theme" description="Select one of the themes or customize it and create your own.
@@ -33,7 +34,7 @@ To use custom theme select \\$a87'Custom\\$z'. You can contribute your Theme
 by taking your '[Setting category=\"Theme\"' values from Settings.ini file
 found in your User Folder and positing them as issue on
 \\$69fhttps://github.com/nitroquery/NitroDashboard/issues\\$z"]
-CurrentTheme Setting_Theme_Name = CurrentTheme::Default;
+CurrentTheme Setting_Theme_Name = CurrentTheme::Nitro2022;
 
 [Setting category="Theme" name="Background color" color]
 vec4 Setting_Theme_Background = vec4(0.0f, 0.0f, 0.0f, 0.7f);
