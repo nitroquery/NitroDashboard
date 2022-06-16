@@ -12,7 +12,7 @@ namespace Nitro {
     private bool AirBrake = false;
     private bool IsTurbo = false;
     private bool Wet = false;
-    private CSceneVehicleVisState::ESceneVehicleVisReactorBoostLvl ReactorBoostLvl;
+    private ESceneVehicleVisReactorBoostLvl ReactorBoostLvl;
 
     Resources::Texture@ tractionIcon;
     Resources::Texture@ engineFaultIcon;
@@ -129,10 +129,10 @@ namespace Nitro {
 
       // Boost
       switch (this.ReactorBoostLvl) {
-        case CSceneVehicleVisState::ESceneVehicleVisReactorBoostLvl::Lvl1:
+        case ESceneVehicleVisReactorBoostLvl::Lvl1:
           stateColor = theme.Warning;
         break;
-        case CSceneVehicleVisState::ESceneVehicleVisReactorBoostLvl::Lvl2:
+        case ESceneVehicleVisReactorBoostLvl::Lvl2:
           stateColor = theme.Negative;
         break;
         default:
@@ -261,10 +261,10 @@ namespace Nitro {
       int fontSizeGear = int(0.25 * size);
 
       switch (this.ReactorBoostLvl) {
-        case CSceneVehicleVisState::ESceneVehicleVisReactorBoostLvl::Lvl1:
+        case ESceneVehicleVisReactorBoostLvl::Lvl1:
           nvg::FillColor(theme.Warning);
         break;
-        case CSceneVehicleVisState::ESceneVehicleVisReactorBoostLvl::Lvl2:
+        case ESceneVehicleVisReactorBoostLvl::Lvl2:
           nvg::FillColor(theme.Negative);
         break;
         default:
@@ -321,11 +321,11 @@ namespace Nitro {
       this.IsTurbo = Setting_Demo_SpecialState == DemoSpecialState::Turbo;
       this.Wet = Setting_Demo_Wet;
       if (Setting_Demo_SpecialState == DemoSpecialState::ReactorBoostLvl1) {
-        this.ReactorBoostLvl = CSceneVehicleVisState::ESceneVehicleVisReactorBoostLvl::Lvl1;
+        this.ReactorBoostLvl = ESceneVehicleVisReactorBoostLvl::Lvl1;
       } else if (Setting_Demo_SpecialState == DemoSpecialState::ReactorBoostLvl2) {
-        this.ReactorBoostLvl = CSceneVehicleVisState::ESceneVehicleVisReactorBoostLvl::Lvl2;
+        this.ReactorBoostLvl = ESceneVehicleVisReactorBoostLvl::Lvl2;
       } else {
-        this.ReactorBoostLvl = CSceneVehicleVisState::ESceneVehicleVisReactorBoostLvl::None;
+        this.ReactorBoostLvl = ESceneVehicleVisReactorBoostLvl::None;
       }
 
       if (this.Gear == 0) {

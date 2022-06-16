@@ -21,7 +21,7 @@ namespace Nitro {
 
       CTrackMania@ app = cast<CTrackMania>(GetApp());
       if (Setting_HideOnHiddenInterface) {
-        if (app.CurrentPlayground is null || app.CurrentPlayground.Interface is null || Dev::GetOffsetUint32(app.CurrentPlayground.Interface, 0x1C) == 0) {
+        if (app.CurrentPlayground is null || app.CurrentPlayground.Interface is null || !UI::IsGameUIVisible()) {
           this.show = false;
           return;
         }
