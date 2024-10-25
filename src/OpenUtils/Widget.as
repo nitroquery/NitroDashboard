@@ -4,8 +4,8 @@ namespace OpenUtils {
     private string Name = 'Untitled';
     bool Visible = false;
 
-    Widget(string name) {
-      this.Name = name;
+    Widget(string _name) {
+      this.Name = _name;
     }
 
     void Update(float dt) {}

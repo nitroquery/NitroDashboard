@@ -3,13 +3,12 @@ name = "Nitro Dashboard"
 author = "NitroQuery"
 category = "Overlay"
 siteid = 102
-version = "1.4.1"
+version = "1.5.0"
 blocks = [ "Plugin_NitroDashboard" ]
 # perms = "paid"
 
 [game]
-min_version = "2022-05-19"
+min_version = "2024-09-01"
 
 [script]
 dependencies = [ "VehicleState" ]
-imports = [ "Icons.as" ]

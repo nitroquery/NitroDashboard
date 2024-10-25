@@ -1,5 +1,5 @@
 namespace Nitro {
-  Resources::Font@ font;
+  nvg::Font font;
 
   class Dashboard {
     bool loaded;
@@ -9,7 +9,7 @@ namespace Nitro {
     OpenUtils::Widget@ Gauge;
 
     void Init() {
-      @font = Resources::GetFont("assets/fonts/hemihead.ttf");
+      font = nvg::LoadFont("assets/fonts/hemihead.ttf");
       @this.Gauge = Nitro::Gauge();
       this.Theme = OpenUtils::Theme();
       this.loaded = true;

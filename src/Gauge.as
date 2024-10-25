@@ -14,22 +14,22 @@ namespace Nitro {
     private bool Wet = false;
     private ESceneVehicleVisReactorBoostLvl ReactorBoostLvl;
 
-    Resources::Texture@ tractionIcon;
-    Resources::Texture@ engineFaultIcon;
-    Resources::Texture@ icingIcon;
-    Resources::Texture@ airbrakeIcon;
-    Resources::Texture@ inactiveIcon;
-    Resources::Texture@ wetIcon;
+    UI::Texture@ tractionIcon;
+    UI::Texture@ engineFaultIcon;
+    UI::Texture@ icingIcon;
+    UI::Texture@ airbrakeIcon;
+    UI::Texture@ inactiveIcon;
+    UI::Texture@ wetIcon;
 
     // Contruct Gauge Widget
     Gauge() {
       super("Gauge");
-      @tractionIcon = Resources::GetTexture("assets/images/icons/traction.png");
-      @engineFaultIcon = Resources::GetTexture("assets/images/icons/engine-fault.png");
-      @icingIcon = Resources::GetTexture("assets/images/icons/icing.png");
-      @airbrakeIcon = Resources::GetTexture("assets/images/icons/airbrake.png");
-      @inactiveIcon = Resources::GetTexture("assets/images/icons/inactive.png");
-      @wetIcon = Resources::GetTexture("assets/images/icons/wet.png");
+      @tractionIcon = UI::LoadTexture("assets/images/icons/traction.png");
+      @engineFaultIcon = UI::LoadTexture("assets/images/icons/engine-fault.png");
+      @icingIcon = UI::LoadTexture("assets/images/icons/icing.png");
+      @airbrakeIcon = UI::LoadTexture("assets/images/icons/airbrake.png");
+      @inactiveIcon = UI::LoadTexture("assets/images/icons/inactive.png");
+      @wetIcon = UI::LoadTexture("assets/images/icons/wet.png");
     }
 
     void UpdateVechicleData(CSceneVehicleVisState@ state) {
@@ -298,7 +298,7 @@ namespace Nitro {
     }
 
     // Render dash indicator icons
-    void renderDashIcon(bool visible, Resources::Texture@ txt, vec2 pos, float size) {
+    void renderDashIcon(bool visible, UI::Texture@ txt, vec2 pos, float size) {
       UI::DrawList@ draw = UI::GetForegroundDrawList();
       if (visible) draw.AddImage(txt, pos, vec2(size, size));
       else draw.AddImage(inactiveIcon, pos, vec2(size, size));
